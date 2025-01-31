@@ -1,10 +1,15 @@
+import { Cache, Logger } from '@/lib';
 import { FilterRuleGroup } from '@/lib/core/FIlterBuilder';
 import { FindOptionsSchema } from '@/lib/core/IBaseRepository';
 import { Request, Response } from 'express';
 import { BookService } from '../services/book.service';
 
 export class BookController {
-  constructor(private readonly service: BookService) {}
+  constructor(
+    private readonly service: BookService,
+    private readonly logger: Logger,
+    private readonly cache: Cache
+  ) {}
 
   async findAll(req: Request, res: Response) {
     const parsedQuery = FindOptionsSchema.safeParse(req.query);
@@ -13,7 +18,16 @@ export class BookController {
       return;
     }
 
+    if (this.cache.get('books')) {
+      this.logger.log('Returning books from cache');
+      res.status(200).json(this.cache.get('books'));
+      return;
+    }
+
     const books = await this.service.findAll(parsedQuery.data);
+    this.logger.log('Found ${books.length} books');
+    this.cache.set('books', books);
+
     res.status(200).json(books);
   }
 

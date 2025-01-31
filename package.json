@@ -19,20 +19,19 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20.10.5",
     "@types/pg": "^8.11.11",
+    "chalk": "^5.4.1",
     "drizzle-kit": "^0.30.2",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.7",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
-    "typescript": "^5",
-    "chalk": "^5.4.1"
+    "typescript": "^5"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-  
     "config": "^3.3.12",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
@@ -41,6 +40,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
+    "reflect-metadata": "^0.2.2",
     "zod": "^3.24.1"
   }
 }

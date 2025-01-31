@@ -10,6 +10,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "moduleDetection": "force",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": ".",
@@ -20,3 +23,4 @@
   "include": ["src"],
   "exclude": ["node_modules"]
 }
+

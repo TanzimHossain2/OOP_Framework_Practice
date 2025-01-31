@@ -1,11 +1,16 @@
 import { NewUser, UpdateUserSchema } from '@/db/schemas';
+import { Cache, Logger } from '@/lib';
 import { FilterRuleGroup } from '@/lib/core/FIlterBuilder';
 import { FindOptionsSchema } from '@/lib/core/IBaseRepository';
 import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 
 export class UserController {
-  constructor(private readonly service: UserService) {}
+  constructor(
+    private readonly service: UserService,
+    private readonly logger: Logger,
+    private readonly cache: Cache
+  ) {}
 
   async findAll(req: Request, res: Response) {
     const parsedQuery = FindOptionsSchema.safeParse(req.query);
@@ -13,7 +18,15 @@ export class UserController {
       return res.status(400).json({ message: 'Invalid query' });
     }
 
+    if (this.cache.get('users')) {
+      this.logger.log('Returning users from cache');
+      return res.status(200).json(this.cache.get('users'));
+    }
+
     const users = await this.service.findAll(parsedQuery.data);
+    this.logger.log(`Found ${users.length} users`);
+    this.cache.set('users', users);
+
     res.status(200).json(users);
   }
 
@@ -54,14 +67,14 @@ export class UserController {
   }
 
   async create(req: Request, res: Response) {
-     const userData: NewUser = req.body;
-     if (!userData.email || !userData.password || !userData.name) {
-      return res.status(400).json({ error: "Missing required fields" });
+    const userData: NewUser = req.body;
+    if (!userData.email || !userData.password || !userData.name) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const existingUser = await this.service.findByEmail(userData.email);
     if (existingUser) {
-      return res.status(409).json({ error: "Email already exists" });
+      return res.status(409).json({ error: 'Email already exists' });
     }
 
     const user = await this.service.create(req.body);
