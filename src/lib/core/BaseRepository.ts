@@ -190,5 +190,10 @@ export abstract class BaseRepository<
       await db.delete(this.table).where(inArray(this.table.id, ids));
     });
   }
+
+  getTable(): TTable {
+    return this.table;
+  }
+
 }
 

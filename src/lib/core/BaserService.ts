@@ -1,8 +1,9 @@
 import chalk from "chalk";
 import { SQLWrapper } from "drizzle-orm";
-import { PgTable } from "drizzle-orm/pg-core";
+import { PgColumn, PgTable } from "drizzle-orm/pg-core";
 import { BaseRepository } from "./BaseRepository";
-import { ID } from "./IBaseRepository";
+import { FilterBuilder } from "./FIlterBuilder";
+import { FindOptions, ID, OrderDirection } from "./IBaseRepository";
 import { IBaserService } from "./IBaserService";
 
 export abstract class BaseService<
@@ -10,10 +11,26 @@ export abstract class BaseService<
   TRepository extends BaseRepository<TTable> = BaseRepository<TTable>
 > implements IBaserService<TTable>
 {
-  constructor(private readonly repository: TRepository) {}
+  constructor(
+    private readonly repository: TRepository
+  ) // protected readonly config: AppConfig; // todo - add config later
+  {}
 
-  findAll() {
-    return "will implement later";
+  async findAll(options?: FindOptions) {
+    const filter = options?.where
+      ? FilterBuilder.build(options.where)
+      : undefined;
+
+    try {
+      return await this.repository.findAll({
+        where: filter,
+        limit: options?.limit ?? 10, // this.config.pagination.limit,
+        offset: options?.offset ?? 0,
+        orderBy: this.transformOrderBy(options?.orderBy),
+      });
+    } catch (err) {
+      this.handleError(err, "FindAll");
+    }
   }
 
   async findById(id: ID): Promise<TTable["$inferSelect"] | null> {
@@ -102,5 +119,17 @@ export abstract class BaseService<
       );
     }
   }
+
+  protected transformOrderBy(orderBy: FindOptions['orderBy']) {
+		if (!orderBy) return undefined;
+		const table = this.repository.getTable();
+
+		return orderBy
+			.filter((order) => order.column in table)
+			.map((order) => ({
+				column: table[order.column as keyof typeof table] as PgColumn,
+				direction: order.direction as OrderDirection,
+			}));
+	}
 }
 

@@ -1,8 +1,10 @@
 import { SQLWrapper } from "drizzle-orm";
 import { PgColumn, PgTable } from "drizzle-orm/pg-core";
+import { z } from "zod";
+import { FilterRuleGroupSchema, OrderDirection } from "./FIlterBuilder";
 
 export type ID = number | string;
-export type orderDirection = "asc" | "desc";
+export type OrderDirection = "asc" | "desc";
 
 export type FindOptionsQL = {
   where?: SQLWrapper;
@@ -10,9 +12,25 @@ export type FindOptionsQL = {
   offset?: number;
   orderBy?: {
     column: PgColumn;
-    direction: orderDirection;
+    direction: OrderDirection;
   }[];
 };
+
+export const FindOptionsSchema = z
+  .object({
+    where: FilterRuleGroupSchema,
+    limit: z.number().default(10), //todo - use app configaration for default value
+    offset: z.number().default(0),
+    orderBy: z.array(
+      z.object({
+        column: z.string(),
+        direction: z.enum(OrderDirection),
+      })
+    ),
+  })
+  .partial();
+
+export type FindOptions = z.infer<typeof FindOptionsSchema>;
 
 export interface IBaseRepository<TTable extends PgTable & { id: SQLWrapper }> {
   //Query function
@@ -44,5 +62,6 @@ export interface IBaseRepository<TTable extends PgTable & { id: SQLWrapper }> {
   //Delete function
   delete(id: ID): Promise<void>;
   deleteMany(ids: ID[]): Promise<void>;
+  getTable(): TTable;
 }
 
