@@ -5,12 +5,14 @@ import { FindOptionsSchema } from '@/lib/core/IBaseRepository';
 import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 
+
 export class UserController {
   constructor(
     private readonly service: UserService,
     private readonly logger: Logger,
     private readonly cache: Cache
   ) {}
+
 
   async findAll(req: Request, res: Response) {
     const parsedQuery = FindOptionsSchema.safeParse(req.query);

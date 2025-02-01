@@ -8,8 +8,8 @@ import { UserService } from '../services/user.service';
 export class UserController {
   constructor(
     private readonly service: UserService,
-    // private readonly logger: Logger,
-    // private readonly cache: Cache
+    private readonly logger: Logger,
+    private readonly cache: Cache
   ) {}
 
   async findAll(req: Request, res: Response) {
@@ -18,9 +18,15 @@ export class UserController {
       return res.status(400).json({ message: 'Invalid query' });
     }
 
- 
+    if (this.cache.get('users')) {
+      this.logger.log('Returning users from cache');
+      return res.status(200).json(this.cache.get('users'));
+    }
+
     const users = await this.service.findAll(parsedQuery.data);
- 
+    this.logger.log(`Found ${users.length} users`);
+    this.cache.set('users', users);
+
     res.status(200).json(users);
   }
 

@@ -1,5 +1,4 @@
 import { UsersTable } from '@/db/schemas';
-import { Email, Logger } from '@/lib';
 import { BaseService } from '@/lib/core/BaserService';
 import { UserRepository } from '../Repository/user.repo';
 
@@ -8,10 +7,10 @@ export class UserService extends BaseService<
   UserRepository
 > {
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly email: Email,
-    private readonly logger: Logger
-  ) {
+    private readonly userRepository: UserRepository
+  ) // private readonly email: Email,
+  // private readonly logger: Logger
+  {
     super(userRepository);
   }
 
@@ -28,13 +27,13 @@ export class UserService extends BaseService<
 
       const token = `${user.id}-${user.email}-${user.password}`;
 
-      // Circuit Breaker with retry mechanism
-      try {
-        await this.email.send(user.email, token);
-      } catch (error) {
-        this.logger.error('Failed to send email, problem with email service');
-        this.handleError(error, 'Send_Email');
-      }
+      // // Circuit Breaker with retry mechanism
+      // try {
+      //   await this.email.send(user.email, token);
+      // } catch (error) {
+      //   this.logger.error('Failed to send email, problem with email service');
+      //   this.handleError(error, 'Send_Email');
+      // }
     } catch (error) {
       this.handleError(error, 'Forget_Password');
     }
