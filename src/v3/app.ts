@@ -9,9 +9,9 @@ const app = express();
 app.use(express.json());
 
 // Register routes
-app.use('/api/v2/auth', authRouter);
-app.use('/api/v2/users', userRouter);
-app.use('/api/v2/books', bookRouter);
+app.use('/api/v3/auth', authRouter);
+app.use('/api/v3/users', userRouter);
+app.use('/api/v3/books', bookRouter);
 
 app.use('/health', (req, res) => {
   res.status(200).json({ message: 'Server is running' });
