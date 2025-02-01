@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { BookController } from './controllers/book.controller';
 import { UserController } from './controllers/user.controller';
 import authRouter from './routers/auth.route';
+import { PostController } from './controllers/post.controller';
 
 export const createApp =  () => {
   const app = express();
@@ -11,7 +12,7 @@ export const createApp =  () => {
   // Middleware
   app.use(express.json());
 
-  registerControllers(app, [UserController, BookController]);
+  registerControllers(app, [UserController, BookController, PostController]);
 
   // Register routes
   app.use('/api/v3/auth', authRouter);
