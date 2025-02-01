@@ -1,5 +1,7 @@
-import chalk from "chalk";
+import chalk from 'chalk';
+import { singleton } from 'tsyringe';
 
+@singleton()
 export class Logger {
   constructor() {}
 

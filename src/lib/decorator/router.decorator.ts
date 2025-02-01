@@ -3,7 +3,7 @@ import { ROUTE_KEY } from './decorator.keys';
 
 export type HTTPMethod = 'get' | 'post' | 'put' | 'delete' | 'patch';
 
-export type RouteDefinition = {
+export type RouterDefinition = {
   method: HTTPMethod; // HTTP method
   path: string;
   middlewares: RequestHandler[];
@@ -20,7 +20,7 @@ export const Route = (
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor
   ) {
-    const routes: RouteDefinition[] =
+    const routes: RouterDefinition[] =
       Reflect.getMetadata(ROUTE_KEY, target) || [];
 
     // Add the route to our array of routes

@@ -1,7 +1,10 @@
-export class Email {
-	constructor() {}
+import { singleton } from 'tsyringe';
 
-	send(email: string, message: string) {
-		console.log(`Sending email to ${email}: ${message}`);
-	}
+@singleton()
+export class Email {
+  constructor() {}
+
+  send(email: string, message: string) {
+    console.log(`Sending email to ${email}: ${message}`);
+  }
 }

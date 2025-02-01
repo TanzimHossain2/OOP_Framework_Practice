@@ -1,7 +1,10 @@
-import { PublisherTable } from "@/db/schemas";
-import { BaseRepository } from "@/lib/core/BaseRepository";
-
-export class PublisherRepository extends BaseRepository<
-  typeof PublisherTable
-> {}
-
+import { PublisherTable } from '@/db/schemas';
+import { BaseRepository } from '@/lib/core/BaseRepository';
+import { DatabaseClientToken, IDatabaseClient } from '@/lib/db/IDatabasClient';
+import { inject, injectable } from 'tsyringe';
+@injectable()
+export class PublisherRepository extends BaseRepository<typeof PublisherTable> {
+  constructor(@inject(DatabaseClientToken) db: IDatabaseClient) {
+    super(db, PublisherTable);
+  }
+}

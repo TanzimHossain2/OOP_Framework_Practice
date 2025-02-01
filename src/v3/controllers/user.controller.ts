@@ -1,22 +1,31 @@
 import { NewUser, UpdateUserSchema } from '@/db/schemas';
+import { Cache, Logger } from '@/lib';
 import { FilterRuleGroup } from '@/lib/core/FIlterBuilder';
 import { FindOptionsSchema } from '@/lib/core/IBaseRepository';
 import { Controller, Delete, Get, Post, Put, Use } from '@/lib/decorator';
 import { Request, Response } from 'express';
+import { singleton } from 'tsyringe';
 import { UserService } from '../services/user.service';
 
 @Controller('/api/v3/users')
+@singleton()
+@Use([
+  async (req, res, next) => {
+    console.log('Global Middleware 1');
+    next();
+  },
+])
 export class UserController {
-  constructor(private readonly service: UserService) {}
+  constructor(
+    private readonly service: UserService,
+    private readonly logger: Logger,
+    private readonly cache: Cache
+  ) {}
 
   @Get('/')
   @Use([
     async (req, res, next) => {
       console.log('Middleware 1');
-      next();
-    },
-    async (req, res, next) => {
-      console.log('Middleware 2');
       next();
     },
   ])
@@ -26,7 +35,15 @@ export class UserController {
       return res.status(400).json({ message: 'Invalid query' });
     }
 
+    if (this.cache.get('users')) {
+      this.logger.log('Returning users from cache');
+      return res.status(200).json(this.cache.get('users'));
+    }
+
     const users = await this.service.findAll(parsedQuery.data);
+
+    this.logger.log(`Found ${users.length} users`);
+    this.cache.set('users', users);
 
     res.status(200).json(users);
   }

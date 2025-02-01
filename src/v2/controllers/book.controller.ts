@@ -5,9 +5,8 @@ import { BookService } from '../services/book.service';
 
 export class BookController {
   constructor(
-    private readonly service: BookService
-  ) // private readonly logger: Logger,
-  // private readonly cache: Cache
+    private readonly service: BookService // private readonly logger: Logger,
+  ) // private readonly cache: Cache
   {}
 
   async findAll(req: Request, res: Response) {

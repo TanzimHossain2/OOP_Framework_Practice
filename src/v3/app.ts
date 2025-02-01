@@ -1,34 +1,38 @@
+import { registerControllers } from '@/lib/core/registerControllers';
 import express from 'express';
+import 'reflect-metadata';
+import { BookController } from './controllers/book.controller';
+import { UserController } from './controllers/user.controller';
 import authRouter from './routers/auth.route';
-import bookRouter from './routers/book.router';
-import userRouter from './routers/user.router';
 
-const app = express();
+export const createApp =  () => {
+  const app = express();
 
-// Middleware
-app.use(express.json());
+  // Middleware
+  app.use(express.json());
 
-// Register routes
-app.use('/api/v3/auth', authRouter);
-app.use('/api/v3/users', userRouter);
-app.use('/api/v3/books', bookRouter);
+  registerControllers(app, [UserController, BookController]);
 
-app.use('/health', (req, res) => {
-  res.status(200).json({ message: 'Server is running' });
-});
+  // Register routes
+  app.use('/api/v3/auth', authRouter);
 
-// Error handling middleware
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
-  }
-);
+  app.use('/health', (req, res) => {
+    res.status(200).json({ message: 'Server is running' });
+  });
 
-export default app;
+  // Error handling middleware
+  app.use(
+    (
+      err: Error,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ) => {
+      console.error(err.stack);
+      res.status(500).json({ message: 'Something went wrong!' });
+    }
+  );
+
+  return app;
+};
 
